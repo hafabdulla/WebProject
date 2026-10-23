@@ -1,6 +1,8 @@
 require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes")
+const reviewRoutes = require("./routes/reviewRoutes");
+const watchlistRoutes = require("./routes/watchlistRoutes");
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
@@ -13,6 +15,8 @@ app.use(cors({ origin: process.env.CLIENT_URL }));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/watchlist", watchlistRoutes);
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
