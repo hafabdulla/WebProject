@@ -18,9 +18,9 @@ function Home() {
 
       if (searchText) {
         url =
-          "api/movies/search?query=" +
-          encodedURIComponent(searchText) +
-          "&page" +
+          "/api/movies/search?query=" +
+          encodeURIComponent(searchText) +
+          "&page=" +
           page;
       }
       try {
@@ -34,8 +34,11 @@ function Home() {
         }
 
         if(page === 1){
-          setMovies(function (oldMovies){
-            return oldMovies.concat(data.results);
+          setMovies(data.results);
+        }
+        else{
+          setMovies(function (oldmovies){
+            return oldmovies.concat(data.results);
           })
         }
         setTotalPages(data.total_pages);
@@ -56,7 +59,7 @@ function Home() {
   const cards = [];
 
   for(let i = 0; i < movies.length;i++){
-    cards.push(<MovieCard key={movies[i].id + "-" + i} movie = {movie[i]}/>)
+    cards.push(<MovieCard key={movies[i].id + "-" + i} movie = {movies[i]}/>)
   }
 
   let heading = "Popular right now";
