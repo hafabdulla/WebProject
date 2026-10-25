@@ -74,3 +74,70 @@ button {
   color: #a0a3b1;
   font-size: 14px;
 }
+
+
+/* Movie Pages */
+
+.page-wide {
+  max-width: 1100px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.search-bar {
+  flex-direction: row;
+  margin-bottom: 24px;
+}
+
+.search-bar input {
+  flex: 1;
+}
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.movie-card {
+  display: block;
+  background: #1e2028;
+  border-radius: 8px;
+  overflow: hidden;
+  color: #f1f1f1;
+  transition: transform 0.15s;
+}
+
+.movie-card:hover {
+  transform: translateY(-4px);
+}
+
+.movie-card img,
+.poster-missing {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+.poster-missing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2a2d38;
+  color: #8a8d9a;
+}
+
+.movie-card-info {
+  padding: 10px;
+}
+
+.movie-card-info h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.load-more {
+  display: block;
+  margin: 28px auto;
+}
