@@ -1,18 +1,23 @@
 const Review = require("../models/Review");
-const User = require("../models/User");
 
 // GET /api/reviews/movie/:movieId  - all reviews of one movie, plus the average
 const getMovieReviews = async (req, res) => {
   try {
-    const reviews = await Review.find({ movieId: req.params.movieId });
+    // populate() replaces the user id with the user's data.
+    // We ask for the name only, because this route is public (no email or password)
+    const reviews = await Review.find({ movieId: req.params.movieId })
+      .populate("user", "name")
+      .sort({ createdAt: -1 });
 
     let total = 0;
-    reviews.forEach((review) => {
-      total += review.rating;
-    });
-    const average = reviews.length
-      ? Math.round((total / reviews.length) * 10) / 10
-      : 0;
+    for (let i = 0; i < reviews.length; i++) {
+      total = total + reviews[i].rating;
+    }
+
+    let average = 0;
+    if (reviews.length > 0) {
+      average = Math.round((total / reviews.length) * 10) / 10;
+    }
 
     res.status(200).json({ average, count: reviews.length, reviews });
   } catch (err) {
@@ -30,14 +35,11 @@ const createReview = async (req, res) => {
         .json({ message: "movieId and a rating from 1 to 5 are required" });
     }
 
+    // One review per user per movie. Note: a compound unique index on (user, movieId)
+    // would be the stronger fix, because two requests at the same moment can both pass this check.
     const exists = await Review.findOne({ movieId, user: req.user.id });
     if (exists) {
       return res.status(400).json({ message: "You already reviewed this movie" });
-    }
-
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
     }
 
     const review = await Review.create({
@@ -45,7 +47,6 @@ const createReview = async (req, res) => {
       rating,
       text,
       user: req.user.id,
-      userName: user.name,
     });
     res.status(201).json(review);
   } catch (err) {
@@ -60,7 +61,9 @@ const updateReview = async (req, res) => {
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
-    if (review.user !== req.user.id) {
+
+    // review.user is an ObjectId, so turn it into text before comparing
+    if (review.user.toString() !== req.user.id) {
       return res.status(403).json({ message: "You can only edit your own review" });
     }
 
@@ -89,7 +92,8 @@ const deleteReview = async (req, res) => {
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
-    if (review.user !== req.user.id && req.user.role !== "admin") {
+
+    if (review.user.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(403).json({ message: "You can only delete your own review" });
     }
 
@@ -108,12 +112,23 @@ const likeReview = async (req, res) => {
       return res.status(404).json({ message: "Review not found" });
     }
 
-    if (review.likes.includes(req.user.id)) {
-      review.likes = review.likes.filter((id) => id !== req.user.id);
-    } else {
-      review.likes.push(req.user.id);
+    // go through the likes: keep everybody else, and remember if this user was already there
+    const newLikes = [];
+    let alreadyLiked = false;
+    for (let i = 0; i < review.likes.length; i++) {
+      if (review.likes[i] === req.user.id) {
+        alreadyLiked = true;
+      } else {
+        newLikes.push(review.likes[i]);
+      }
     }
 
+    // if they had not liked it yet, add their like
+    if (!alreadyLiked) {
+      newLikes.push(req.user.id);
+    }
+
+    review.likes = newLikes;
     await review.save();
     res.status(200).json(review);
   } catch (err) {
