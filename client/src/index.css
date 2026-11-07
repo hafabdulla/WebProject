@@ -212,3 +212,25 @@ select {
 .review-form {
   margin-bottom: 20px;
 }
+
+/* Genre filter */
+.genre-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.genre-bar button {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: normal;
+  background: #1e2028;
+  color: #f1f1f1;
+}
+
+.genre-bar .active {
+  background: #f5c518;
+  color: #14151a;
+  font-weight: bold;
+}
