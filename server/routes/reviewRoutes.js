@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   getMovieReviews,
+  getMyReviews,
   createReview,
   updateReview,
   deleteReview,
@@ -11,6 +12,7 @@ const { protect } = require("../middleware/auth");
 const router = express.Router();
 
 router.get("/movie/:movieId", getMovieReviews);
+router.get("/mine", protect, getMyReviews);
 router.post("/", protect, createReview);
 router.put("/:id", protect, updateReview);
 router.delete("/:id", protect, deleteReview);

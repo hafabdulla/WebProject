@@ -20,6 +20,16 @@ const getMovieReviews = async (req, res) => {
   }
 };
 
+// GET /api/reviews/mine  - all reviews written by the logged in user
+const getMyReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ user: req.user.id }).sort({ createdAt: -1 });
+    res.status(200).json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // POST /api/reviews  - write a review (logged in)
 const createReview = async (req, res) => {
   try {
@@ -123,6 +133,7 @@ const likeReview = async (req, res) => {
 
 module.exports = {
   getMovieReviews,
+  getMyReviews,
   createReview,
   updateReview,
   deleteReview,
