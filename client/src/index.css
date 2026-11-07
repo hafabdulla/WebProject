@@ -159,3 +159,46 @@ button {
   width: 260px;
   border-radius: 6px;
 }
+
+/* Home filters, watchlist tabs, trailer and profile */
+.category-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.category-tabs .active {
+  background: #ffffff;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.year-form {
+  flex-direction: row;
+  align-items: center;
+}
+
+.trailer {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 8px;
+}
+
+.profile-info {
+  background: #1e2028;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+}
+
+.profile-info p {
+  margin: 6px 0;
+}
