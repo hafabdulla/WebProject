@@ -8,6 +8,8 @@ function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [genres, setGenres] = useState([]);
+  const [genreId, setGenreId] = useState("")
 
   useEffect(() => {
     async function loadMovies() {
@@ -17,11 +19,10 @@ function Home() {
       let url = "/api/movies/popular?page=" + page;
 
       if (searchText) {
-        url =
-          "/api/movies/search?query=" +
-          encodeURIComponent(searchText) +
-          "&page=" +
-          page;
+        url = "/api/movies/search?query=" +      encodeURIComponent(searchText) + "&page=" + page;
+      }
+      else if (genreId){
+        url = "/api/movies/discover?genre=" + genreId + "&page=" + page
       }
       try {
         const res = await fetch(url);
@@ -48,11 +49,39 @@ function Home() {
       setLoading(false);
     }
     loadMovies();
-  }, [searchText, page]);
+  }, [searchText, page, genreId]);
 
+
+  useEffect(()=>{
+    async function  loadGenres(){
+      try{
+        const res = await fetch("/api/movies/genres")
+        const data = await res.json()
+        if(!res.ok){
+          return
+        }
+        setGenres(data.genres);
+      }
+      catch(err){
+        //if this fails the genre bat just stays empty.
+      }
+    }
+    loadGenres();
+  }, []);
+  function handleGenreClick(id){
+    setPage(1)
+    setSearchInput("");
+    setSearchText("");
+    if(genreId === id){
+      setGenreId("");
+    }else{
+      setGenreId(id);
+    }
+  }
   function handleSearch(event){
     event.preventDefault();
     setPage(1);
+    setGenreId("");
     setSearchText(searchInput.trim());
   }
 
@@ -62,10 +91,30 @@ function Home() {
     cards.push(<MovieCard key={movies[i].id + "-" + i} movie = {movies[i]}/>)
   }
 
+  const genreButtons = [];
+  for(let i = 0; i < genres.length; i++){
+    const genre = genres[i];
+    let buttonClass = "";
+    if(genreId === genre.id){
+      buttonClass = "active";
+    }
+    genreButtons.push(
+      <button key={genre.id} className = {buttonClass} onClick={() => handleGenreClick(genre.id)}>
+        {genre.name}
+      </button>
+    )
+  }
+
   let heading = "Popular right now";
 
   if(searchText){
     heading = "Result for " + searchText;
+  }else if(genreId){
+    for(let i = 0; i < genres.length; i++){
+      if(genres[i].id === genreId){
+        heading = genres[i].name + " movies";
+      }
+    }
   }
 
     return (
@@ -79,7 +128,7 @@ function Home() {
         />
         <button type="submit">Search</button>
       </form>
-
+      <div className="genre-bar">{genreButtons}</div>
       <h2>{heading}</h2>
       {error && <p className="error">{error}</p>}
       {!loading && !error && movies.length === 0 && <p>No movies found.</p>}
