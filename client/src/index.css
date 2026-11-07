@@ -159,3 +159,56 @@ button {
   width: 260px;
   border-radius: 6px;
 }
+
+
+/* Reviews and watchlist (movie details page) */
+textarea,
+select {
+  padding: 10px;
+  border: 1px solid #3a3d4a;
+  border-radius: 6px;
+  background: #1e2028;
+  color: #f1f1f1;
+  font-family: inherit;
+}
+
+.watchlist-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.watchlist-buttons .active {
+  background: #ffffff;
+}
+
+.reviews {
+  margin-top: 32px;
+}
+
+.review {
+  background: #1e2028;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.review p {
+  margin: 0 0 8px;
+}
+
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.small-button {
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+.review-form {
+  margin-bottom: 20px;
+}
