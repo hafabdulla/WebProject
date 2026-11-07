@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MovieDetails from "./pages/MovieDetails"
+import Watchlist from "./pages/Watchlist";
 function App() {
   return (
     <div>
@@ -13,6 +14,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/movie/:id" element={<MovieDetails/>}/>
+        <Route path="/watchlist" element={<Watchlist />} />
       </Routes>
     </div>
   );
