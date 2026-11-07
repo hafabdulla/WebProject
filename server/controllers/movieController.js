@@ -29,6 +29,39 @@ const getPopular = async(req, res) =>{
     }
 }
 
+const getTrending = async(req, res) =>{
+    try{
+        const page = req.query.page || 1;
+        const data = await tmdbGet("/trending/movie/week", {page: page})
+        res.status(200).json(data);
+    }
+    catch(err){
+        sendError(res,err);
+    }
+}
+
+const getTopRated = async(req, res) =>{
+    try{
+        const page = req.query.page || 1;
+        const data = await tmdbGet("/movie/top_rated", {page: page})
+        res.status(200).json(data);
+    }
+    catch(err){
+        sendError(res,err);
+    }
+}
+
+const getUpcoming = async(req, res) =>{
+    try{
+        const page = req.query.page || 1;
+        const data = await tmdbGet("/movie/upcoming", {page: page})
+        res.status(200).json(data);
+    }
+    catch(err){
+        sendError(res,err);
+    }
+}
+
 const searchMovies = async(req, res) => {
     try{
         const text = req.query.query;
@@ -60,6 +93,9 @@ const discoverMovies = async(req, res) => {
         if(req.query.genre){
             params.with_genres = req.query.genre;
         }
+        if(req.query.year){
+            params.primary_release_year = req.query.year;
+        }
         const data  = await tmdbGet("/discover/movie", params);
         res.status(200).json(data);
     }
@@ -89,5 +125,8 @@ module.exports = {
     searchMovies, 
     getGenres,
     discoverMovies,
-    getMovieDetails
+    getMovieDetails,
+    getTrending,
+    getTopRated,
+    getUpcoming
 }
