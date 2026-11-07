@@ -68,6 +68,24 @@ function MovieDetails(){
             )
         }
     }
+
+        const directors = [];
+    if(movie.credits && movie.credits.crew){
+        for(let i = 0; i < movie.credits.crew.length; i++){
+            if(movie.credits.crew[i].job === "Director"){
+                directors.push(movie.credits.crew[i].name);
+            }
+        }
+    }
+    let trailerKey = "";
+    if(movie.videos && movie.videos.results){
+        for(let i = 0; i < movie.videos.results.length; i++){
+            const video = movie.videos.results[i];
+            if(trailerKey === "" && video.site === "YouTube" && video.type === "Trailer"){
+                trailerKey = video.key;
+            }
+        }
+    }
     let poster = <div className="poster-missing">No Poster</div>;
 if(movie.poster_path){
     poster = <img src={IMAGE_BASE + movie.poster_path} alt = {movie.title}/>;
@@ -84,6 +102,9 @@ return (
                     {year} | Rating {movie.vote_average.toFixed(1)} | {movie.runtime} min
                 </p>
                 <p className="small">{genreNames.join(",")}</p>
+                {directors.length > 0 && (
+                    <p className="small">Directed by {directors.join(", ")}</p>
+                )}
                 <p>{movie.overview}</p>
             </div>
         </div>
