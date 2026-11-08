@@ -10,13 +10,14 @@ function Home() {
   const [error, setError] = useState("");
   const [genres, setGenres] = useState([]);
   const [genreId, setGenreId] = useState("")
+  const [category, setCategory] = useState("popular");
 
   useEffect(() => {
     async function loadMovies() {
       setLoading(true);
       setError("");
 
-      let url = "/api/movies/popular?page=" + page;
+      let url = "/api/movies/category/" + category + "?page=" + page;
 
       if (searchText) {
         url = "/api/movies/search?query=" +      encodeURIComponent(searchText) + "&page=" + page;
@@ -45,11 +46,14 @@ function Home() {
         setTotalPages(data.total_pages);
       } catch (err) {
         setError("Could not reach the server");
+        if(page === 1){
+          setMovies([]);
+        }
       }
       setLoading(false);
     }
     loadMovies();
-  }, [searchText, page, genreId]);
+  }, [searchText, page, genreId, category]);
 
 
   useEffect(()=>{
@@ -78,6 +82,13 @@ function Home() {
       setGenreId(id);
     }
   }
+  function handleCategoryClick(name){
+    setPage(1);
+    setSearchInput("");
+    setSearchText("");
+    setGenreId("");
+    setCategory(name);
+  }
   function handleSearch(event){
     event.preventDefault();
     setPage(1);
@@ -89,6 +100,26 @@ function Home() {
 
   for(let i = 0; i < movies.length;i++){
     cards.push(<MovieCard key={movies[i].id + "-" + i} movie = {movies[i]}/>)
+  }
+
+  const categories = [
+    {value: "popular", label: "Popular"},
+    {value: "trending", label: "Trending"},
+    {value: "top_rated", label: "Top Rated"},
+    {value: "upcoming", label: "Upcoming"},
+  ]
+
+  const categoryButtons = [];
+  for(let i = 0; i < categories.length;i++){
+    let buttonClass = "";
+    if(category === categories[i].value && !searchText && !genreId){
+      buttonClass = "active";
+    }
+    categoryButtons.push(
+      <button key={categories[i].value} className={buttonClass} onClick={()=>{handleCategoryClick(categories[i].value)}}>
+        {categories[i].label}
+      </button>
+    )
   }
 
   const genreButtons = [];
@@ -105,9 +136,13 @@ function Home() {
     )
   }
 
-  let heading = "Popular right now";
-
-  if(searchText){
+  let heading = "";
+  for(let i = 0; i < categories.length;i++)
+{
+  if(categories[i].value === category){
+    heading = categories[i].label;
+  }
+}  if(searchText){
     heading = "Result for " + searchText;
   }else if(genreId){
     for(let i = 0; i < genres.length; i++){
@@ -128,6 +163,7 @@ function Home() {
         />
         <button type="submit">Search</button>
       </form>
+      <div className="genre-bar">{categoryButtons}</div>
       <div className="genre-bar">{genreButtons}</div>
       <h2>{heading}</h2>
       {error && <p className="error">{error}</p>}
