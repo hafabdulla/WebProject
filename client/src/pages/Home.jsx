@@ -10,7 +10,7 @@ function Home() {
   const [error, setError] = useState("");
   const [genres, setGenres] = useState([]);
   const [genreId, setGenreId] = useState("")
-  const [category, setCategory] = useState("popluar");
+  const [category, setCategory] = useState("popular");
 
   useEffect(() => {
     async function loadMovies() {
@@ -46,6 +46,9 @@ function Home() {
         setTotalPages(data.total_pages);
       } catch (err) {
         setError("Could not reach the server");
+        if(page === 1){
+          setMovies([]);
+        }
       }
       setLoading(false);
     }
