@@ -28,7 +28,27 @@ const getPopular = async(req, res) =>{
         sendError(res,err);
     }
 }
-
+//the TMDB path for each category we offer on the homepage
+const CATEGORY_PATHS = {
+    popular: "/movie/popular",
+    trending: "/trending/movie/week",
+    top_rated: "/movie/top_rated",
+    upcoming: "/movie/upcoming",
+}
+const getCategory = async(req, res) => {
+    try{
+        const path = CATEGORY_PATHS[req.params.name]
+        if(!path){
+            return res.status(400).json({message:"Unknown Category"})
+        }
+        const page = req.query.page || 1;
+        const data = await tmdbGet(path, {page: page});
+        res.status(200).json(data);
+    }
+    catch(err){
+        sendError(res, err);
+    }
+}
 const searchMovies = async(req, res) => {
     try{
         const text = req.query.query;
@@ -86,6 +106,7 @@ const getMovieDetails = async (req, res) => {
 
 module.exports = {
     getPopular, 
+    getCategory,
     searchMovies, 
     getGenres,
     discoverMovies,
