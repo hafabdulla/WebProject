@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MovieDetails from "./pages/MovieDetails"
 import Watchlist from "./pages/Watchlist";
+import Recommendations from "./pages/Recommendations";
 function App() {
   return (
     <div>
@@ -15,6 +16,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/movie/:id" element={<MovieDetails/>}/>
         <Route path="/watchlist" element={<Watchlist />} />
+        <Route path="/recommendations" element={<Recommendations />} />
       </Routes>
     </div>
   );
