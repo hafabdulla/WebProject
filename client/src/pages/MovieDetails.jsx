@@ -87,13 +87,20 @@ function MovieDetails(){
                 trailerKey = video.key;
             }
         }
+        // some movies have no trailer yet, only a teaser, so use that instead
+        for(let i = 0; i < movie.videos.results.length; i++){
+            const video = movie.videos.results[i];
+            if(trailerKey === "" && video.site === "YouTube" && video.type === "Teaser"){
+                trailerKey = video.key;
+            }
+        }
     }
     let poster = <div className="poster-missing">No Poster</div>;
 if(movie.poster_path){
     poster = <img src={IMAGE_BASE + movie.poster_path} alt = {movie.title}/>;
 }
 return (
-    <div className="page">
+    <div className="page-wide">
         <div className="details-top">
             {poster}
             <div className="details-info">
@@ -111,6 +118,18 @@ return (
             </div>
         </div>
         <WatchlistButtons movieId={movie.id} />
+        {trailerKey && (
+            <div className="trailer-section">
+                <h3>Trailer</h3>
+                <iframe
+                    className="trailer"
+                    src={"https://www.youtube-nocookie.com/embed/" + trailerKey}
+                    title={movie.title + " trailer"}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                />
+            </div>
+        )}
         {castItems.length >0 &&(
             <div>
                 <h3>

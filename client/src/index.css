@@ -271,3 +271,91 @@ select {
   color: #14151a;
   font-weight: bold;
 }
+
+/* Trailer on the movie page */
+.trailer-section {
+  max-width: 800px;
+  margin: 24px 0;
+}
+
+/* images never get wider than the screen */
+img {
+  max-width: 100%;
+}
+
+/* Tablets */
+@media (max-width: 900px) {
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+  .navbar {
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    padding: 12px 16px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 10px 14px;
+  }
+
+  .page {
+    margin: 24px auto;
+  }
+
+  .page-wide {
+    margin: 20px auto;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+  }
+
+  .movie-card-info {
+    padding: 8px;
+  }
+
+  .movie-card-info h3 {
+    font-size: 13px;
+  }
+
+  /* movie page: poster on top, details below it */
+  .details-top {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .details-top img,
+  .details-top .poster-missing {
+    width: 200px;
+  }
+
+  .details-info {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .search-bar button,
+  .year-form button {
+    padding: 10px 12px;
+  }
+
+  .year-form input {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .review-actions {
+    flex-wrap: wrap;
+  }
+}
