@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import MovieDetails from "./pages/MovieDetails"
 import Watchlist from "./pages/Watchlist";
 import Profile from "./pages/Profile";
+import Recommendations from "./pages/Recommendations";
 import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/recommendations" element={<Recommendations />} />
       </Routes>
     </div>
   );

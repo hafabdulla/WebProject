@@ -1,5 +1,7 @@
 import {useState, useEffect} from "react"
 import {useParams} from "react-router-dom";
+import Reviews from "../components/Reviews";
+import WatchlistButtons from "../components/WatchlistButtons";
 
 const IMAGE_BASE = "https://image.tmdb.org/t/p/w342"
 
@@ -108,6 +110,7 @@ return (
                 <p>{movie.overview}</p>
             </div>
         </div>
+        <WatchlistButtons movieId={movie.id} />
         {castItems.length >0 &&(
             <div>
                 <h3>
@@ -118,6 +121,7 @@ return (
                 </ul>
             </div>
         )}
+        <Reviews movieId={movie.id} />
     </div>
 )
 }
