@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "./store/authSlice";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -9,6 +12,32 @@ import Profile from "./pages/Profile";
 import Recommendations from "./pages/Recommendations";
 import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
+  const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
+
+  // The saved login can go stale (tokens expire after 7 days, or the server's
+  // JWT_SECRET changed). Ask the server if the token still works; if not, log out.
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+    async function checkToken() {
+      try {
+        const res = await fetch("/api/auth/me", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          dispatch(logout());
+        }
+      } catch (err) {
+        // server not reachable: keep the login, the pages will show their own error
+      }
+    }
+    checkToken();
+  }, [token, dispatch]);
+
   return (
     <div>
       <Navbar />
