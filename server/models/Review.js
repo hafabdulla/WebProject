@@ -13,4 +13,7 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// one review per user per movie: the database itself refuses a second one
+reviewSchema.index({ user: 1, movieId: 1 }, { unique: true });
+
 module.exports = mongoose.model("Review", reviewSchema);

@@ -1,31 +1,52 @@
+const mongoose = require("mongoose");
 const Review = require("../models/Review");
+const User = require("../models/User");
+
+const MAX_TEXT_LENGTH = 2000;
+
+// true if the text looks like a MongoDB id. Without this check, a bad id makes
+// findById() throw a CastError and the server answers 500 instead of 400/404.
+const isValidId = (id) => mongoose.isObjectIdOrHexString(id);
+
+// a rating must be a whole number from 1 to 5
+const isValidRating = (rating) => {
+  const number = Number(rating);
+  return Number.isInteger(number) && number >= 1 && number <= 5;
+};
+
+// works out the average rating of a list of reviews, rounded to 1 decimal
+const averageOf = (reviews) => {
+  if (reviews.length === 0) {
+    return 0;
+  }
+  let total = 0;
+  for (let i = 0; i < reviews.length; i++) {
+    total = total + reviews[i].rating;
+  }
+  return Math.round((total / reviews.length) * 10) / 10;
+};
 
 // GET /api/reviews/movie/:movieId  - all reviews of one movie, plus the average
 const getMovieReviews = async (req, res) => {
   try {
+    const movieId = Number(req.params.movieId);
+    if (!Number.isInteger(movieId)) {
+      return res.status(400).json({ message: "Invalid movie ID" });
+    }
+
     // populate() replaces the user id with the user's data.
     // We ask for the name only, because this route is public (no email or password)
-    const reviews = await Review.find({ movieId: req.params.movieId })
+    const reviews = await Review.find({ movieId: movieId })
       .populate("user", "name")
       .sort({ createdAt: -1 });
 
-    let total = 0;
-    for (let i = 0; i < reviews.length; i++) {
-      total = total + reviews[i].rating;
-    }
-
-    let average = 0;
-    if (reviews.length > 0) {
-      average = Math.round((total / reviews.length) * 10) / 10;
-    }
-
-    res.status(200).json({ average, count: reviews.length, reviews });
+    res.status(200).json({ average: averageOf(reviews), count: reviews.length, reviews });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// GET /api/reviews/mine  - all reviews written by the logged in user
+// GET /api/reviews/me  (also /api/reviews/mine)  - all reviews written by the logged in user
 const getMyReviews = async (req, res) => {
   try {
     const reviews = await Review.find({ user: req.user.id }).sort({ createdAt: -1 });
@@ -35,18 +56,109 @@ const getMyReviews = async (req, res) => {
   }
 };
 
+// GET /api/reviews/user/:userId  - all reviews written by one user (public)
+const getUserReviews = async (req, res) => {
+  try {
+    if (!isValidId(req.params.userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    const user = await User.findById(req.params.userId).select("name");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const reviews = await Review.find({ user: user._id }).sort({ createdAt: -1 });
+    res.status(200).json({
+      user: { _id: user._id, name: user.name },
+      average: averageOf(reviews),
+      count: reviews.length,
+      reviews,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET /api/reviews/:id  - one review (public)
+const getReview = async (req, res) => {
+  try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({ message: "Invalid review ID" });
+    }
+
+    const review = await Review.findById(req.params.id).populate("user", "name");
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+    res.status(200).json(review);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET /api/reviews?page=1&limit=20&movieId=550&userId=...  - every review (admin only),
+// newest first, for the admin dashboard
+const getAllReviews = async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+
+    const filter = {};
+    if (req.query.movieId) {
+      filter.movieId = Number(req.query.movieId);
+      if (!Number.isInteger(filter.movieId)) {
+        return res.status(400).json({ message: "Invalid movie ID" });
+      }
+    }
+    if (req.query.userId) {
+      if (!isValidId(req.query.userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      filter.user = req.query.userId;
+    }
+
+    const total = await Review.countDocuments(filter);
+    const reviews = await Review.find(filter)
+      .populate("user", "name email")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({
+      page,
+      total_pages: Math.max(1, Math.ceil(total / limit)),
+      total,
+      reviews,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // POST /api/reviews  - write a review (logged in)
 const createReview = async (req, res) => {
   try {
-    const { movieId, rating, text } = req.body;
-    if (!movieId || !rating || rating < 1 || rating > 5) {
+    const { rating, text } = req.body;
+    const movieId = Number(req.body.movieId);
+
+    if (!Number.isInteger(movieId) || movieId <= 0) {
+      return res.status(400).json({ message: "A valid movieId is required" });
+    }
+    if (!isValidRating(rating)) {
+      return res.status(400).json({ message: "Rating must be a whole number from 1 to 5" });
+    }
+    if (text !== undefined && typeof text !== "string") {
+      return res.status(400).json({ message: "Review text must be text" });
+    }
+    if (text && text.length > MAX_TEXT_LENGTH) {
       return res
         .status(400)
-        .json({ message: "movieId and a rating from 1 to 5 are required" });
+        .json({ message: "Review text can be at most " + MAX_TEXT_LENGTH + " characters" });
     }
 
-    // One review per user per movie. Note: a compound unique index on (user, movieId)
-    // would be the stronger fix, because two requests at the same moment can both pass this check.
+    // One review per user per movie. The unique index in the Review model also
+    // blocks this, even if two requests arrive at the same moment.
     const exists = await Review.findOne({ movieId, user: req.user.id });
     if (exists) {
       return res.status(400).json({ message: "You already reviewed this movie" });
@@ -54,12 +166,16 @@ const createReview = async (req, res) => {
 
     const review = await Review.create({
       movieId,
-      rating,
+      rating: Number(rating),
       text,
       user: req.user.id,
     });
     res.status(201).json(review);
   } catch (err) {
+    // 11000 = MongoDB "duplicate key", from the unique (user, movieId) index
+    if (err.code === 11000) {
+      return res.status(400).json({ message: "You already reviewed this movie" });
+    }
     res.status(500).json({ message: err.message });
   }
 };
@@ -67,6 +183,10 @@ const createReview = async (req, res) => {
 // PUT /api/reviews/:id  - edit your own review
 const updateReview = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({ message: "Invalid review ID" });
+    }
+
     const review = await Review.findById(req.params.id);
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
@@ -79,12 +199,20 @@ const updateReview = async (req, res) => {
 
     const { rating, text } = req.body;
     if (rating !== undefined) {
-      if (rating < 1 || rating > 5) {
-        return res.status(400).json({ message: "Rating must be from 1 to 5" });
+      if (!isValidRating(rating)) {
+        return res.status(400).json({ message: "Rating must be a whole number from 1 to 5" });
       }
-      review.rating = rating;
+      review.rating = Number(rating);
     }
     if (text !== undefined) {
+      if (typeof text !== "string") {
+        return res.status(400).json({ message: "Review text must be text" });
+      }
+      if (text.length > MAX_TEXT_LENGTH) {
+        return res
+          .status(400)
+          .json({ message: "Review text can be at most " + MAX_TEXT_LENGTH + " characters" });
+      }
       review.text = text;
     }
 
@@ -98,6 +226,10 @@ const updateReview = async (req, res) => {
 // DELETE /api/reviews/:id  - delete your own review (an admin can delete any)
 const deleteReview = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({ message: "Invalid review ID" });
+    }
+
     const review = await Review.findById(req.params.id);
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
@@ -117,6 +249,10 @@ const deleteReview = async (req, res) => {
 // POST /api/reviews/:id/like  - like a review, or take the like back
 const likeReview = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({ message: "Invalid review ID" });
+    }
+
     const review = await Review.findById(req.params.id);
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
@@ -149,6 +285,9 @@ const likeReview = async (req, res) => {
 module.exports = {
   getMovieReviews,
   getMyReviews,
+  getUserReviews,
+  getReview,
+  getAllReviews,
   createReview,
   updateReview,
   deleteReview,
