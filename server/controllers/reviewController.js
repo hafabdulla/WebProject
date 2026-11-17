@@ -46,7 +46,7 @@ const getMovieReviews = async (req, res) => {
   }
 };
 
-// GET /api/reviews/me  (also /api/reviews/mine)  - all reviews written by the logged in user
+// GET /api/reviews/mine  - all reviews written by the logged in user
 const getMyReviews = async (req, res) => {
   try {
     const reviews = await Review.find({ user: req.user.id }).sort({ createdAt: -1 });

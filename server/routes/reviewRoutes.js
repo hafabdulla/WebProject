@@ -14,11 +14,10 @@ const { protect, adminOnly } = require("../middleware/auth");
 
 const router = express.Router();
 
-// the fixed paths (/me, /movie/..., /user/...) must come before "/:id",
-// otherwise Express would treat "me" as a review id
+// the fixed paths (/mine, /movie/..., /user/...) must come before "/:id",
+// otherwise Express would treat "mine" as a review id
 router.get("/", protect, adminOnly, getAllReviews);
-router.get("/me", protect, getMyReviews);
-router.get("/mine", protect, getMyReviews); // older name, kept so nothing breaks
+router.get("/mine", protect, getMyReviews);
 router.get("/movie/:movieId", getMovieReviews);
 router.get("/user/:userId", getUserReviews);
 router.get("/:id", getReview);
