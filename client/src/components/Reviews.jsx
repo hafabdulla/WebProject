@@ -161,9 +161,10 @@ function Reviews({ movieId }) {
   for (let i = 0; i < reviews.length; i++) {
     const review = reviews[i];
 
+    // the author's name links to their public page
     let author = "Deleted user";
     if (review.user) {
-      author = review.user.name;
+      author = <Link to={"/users/" + review.user._id}>{review.user.name}</Link>;
     }
 
     const isOwner = user && review.user && review.user._id === user.id;

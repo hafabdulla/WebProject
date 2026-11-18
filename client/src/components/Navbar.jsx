@@ -24,6 +24,7 @@ function Navbar() {
       {user ? (
         <div className="nav-links">
           <Link to="/watchlist">Watchlist</Link>
+          <Link to="/friends">Friends</Link>
           <Link to="/profile">Profile</Link>
           <span>Hello, {user.name}</span>
           <button onClick={handleLogout}>Logout</button>

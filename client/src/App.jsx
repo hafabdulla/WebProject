@@ -10,6 +10,8 @@ import MovieDetails from "./pages/MovieDetails"
 import Watchlist from "./pages/Watchlist";
 import Profile from "./pages/Profile";
 import Recommendations from "./pages/Recommendations";
+import Friends from "./pages/Friends";
+import UserPage from "./pages/UserPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   const token = useSelector((state) => state.auth.token);
@@ -63,6 +65,15 @@ function App() {
           }
         />
         <Route path="/recommendations" element={<Recommendations />} />
+        <Route
+          path="/friends"
+          element={
+            <ProtectedRoute>
+              <Friends />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/users/:id" element={<UserPage />} />
       </Routes>
     </div>
   );

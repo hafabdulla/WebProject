@@ -4,6 +4,8 @@ const authRoutes = require("./routes/authRoutes")
 const reviewRoutes = require("./routes/reviewRoutes");
 const watchlistRoutes = require("./routes/watchlistRoutes");
 const movieRoutes = require("./routes/movieRoutes");
+const friendRoutes = require("./routes/friendRoutes");
+const userRoutes = require("./routes/userRoutes");
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
@@ -19,6 +21,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/watchlist", watchlistRoutes);
 app.use("/api/movies", movieRoutes);
+app.use("/api/friends", friendRoutes);
+app.use("/api/users", userRoutes);
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
