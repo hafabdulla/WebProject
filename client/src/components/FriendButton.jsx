@@ -148,6 +148,9 @@ function FriendButton({ userId, initialStatus, initialRequestId, onChange }) {
     buttons = (
       <>
         <span className="small">Friends</span>
+        <Link to={"/chat/" + userId} className="small-button link-button">
+          Message
+        </Link>
         <button className="small-button secondary-button" onClick={removeFriend} disabled={busy}>
           Remove
         </button>

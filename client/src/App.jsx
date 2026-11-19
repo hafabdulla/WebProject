@@ -15,6 +15,8 @@ import UserPage from "./pages/UserPage";
 import Forum from "./pages/Forum";
 import ForumBoard from "./pages/ForumBoard";
 import ForumThread from "./pages/ForumThread";
+import Chat from "./pages/Chat";
+import Notifications from "./pages/Notifications";
 import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   const token = useSelector((state) => state.auth.token);
@@ -80,6 +82,30 @@ function App() {
         <Route path="/forum" element={<Forum />} />
         <Route path="/forum/thread/:id" element={<ForumThread />} />
         <Route path="/forum/:board" element={<ForumBoard />} />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chat/:userId"
+          element={
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

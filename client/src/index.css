@@ -371,6 +371,179 @@ a.forum-row:hover {
   overflow-wrap: anywhere;
 }
 
+/* Unread counts in the navbar and chat list */
+.badge {
+  display: inline-block;
+  min-width: 18px;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 9px;
+  background: #ff6b6b;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 16px;
+}
+
+/* a link that looks like a small button */
+.link-button {
+  display: inline-block;
+  border-radius: 6px;
+  background: #f5c518;
+  color: #14151a;
+  font-weight: bold;
+}
+
+/* Notifications page */
+.page-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 12px 14px;
+  background: #1e2028;
+  color: #a0a3b1;
+  font-weight: normal;
+  text-align: left;
+}
+
+.notification.unread {
+  color: #f1f1f1;
+  font-weight: bold;
+  border-left: 4px solid #f5c518;
+}
+
+/* Chat page: friends on the left, messages on the right */
+.chat-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  height: 70vh;
+  min-height: 420px;
+}
+
+.chat-list {
+  overflow-y: auto;
+}
+
+.conversation {
+  display: block;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  background: #1e2028;
+  color: #f1f1f1;
+}
+
+.conversation.active {
+  background: #2f3240;
+  border-left: 4px solid #f5c518;
+}
+
+.conversation-name {
+  display: block;
+  font-weight: bold;
+}
+
+.conversation-preview {
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chat-box {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #1a1b21;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2a2d38;
+}
+
+.chat-back {
+  display: none;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.chat-empty {
+  text-align: center;
+}
+
+.load-older {
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.bubble-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.bubble-row.mine {
+  align-items: flex-end;
+}
+
+.bubble {
+  max-width: 75%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #2a2d38;
+}
+
+.bubble-row.mine .bubble {
+  background: #f5c518;
+  color: #14151a;
+}
+
+.bubble p {
+  margin: 0;
+}
+
+.bubble-time {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  opacity: 0.7;
+  text-align: right;
+}
+
+.chat-form {
+  flex-direction: row;
+}
+
+.chat-form input {
+  flex: 1;
+  min-width: 0;
+}
+
 /* Trailer on the movie page */
 .trailer-section {
   max-width: 800px;
@@ -456,5 +629,23 @@ img {
 
   .review-actions {
     flex-wrap: wrap;
+  }
+
+  /* chat on phones: show the friend list OR the open chat, not both */
+  .chat-layout {
+    grid-template-columns: 1fr;
+    height: 75vh;
+  }
+
+  .chat-layout.chat-open .chat-list {
+    display: none;
+  }
+
+  .chat-layout:not(.chat-open) .chat-box {
+    display: none;
+  }
+
+  .chat-back {
+    display: inline;
   }
 }

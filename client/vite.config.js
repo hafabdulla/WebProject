@@ -7,6 +7,8 @@ export default defineConfig({
     // any request that starts with /api is forwarded to the Express server
     proxy: {
       "/api": "http://localhost:5000",
+      // the live connection for chat and notifications (ws: true allows WebSockets)
+      "/socket.io": { target: "http://localhost:5000", ws: true },
     },
   },
 });

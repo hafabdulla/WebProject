@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Friendship = require("../models/Friendship");
 const User = require("../models/User");
+const notify = require("../utils/notify");
 
 const isValidId = (id) => mongoose.isObjectIdOrHexString(id);
 
@@ -108,10 +109,12 @@ const sendRequest = async (req, res) => {
       // they already sent me a request, so sending one back means accepting theirs
       existing.status = "accepted";
       await existing.save();
+      await notify(userId, "friend_accepted", req.user.id, "/users/" + req.user.id);
       return res.status(200).json({ message: "You are now friends", friendship: existing });
     }
 
     const friendship = await Friendship.create({ requester: req.user.id, recipient: userId });
+    await notify(userId, "friend_request", req.user.id, "/friends");
     res.status(201).json({ message: "Friend request sent", friendship });
   } catch (err) {
     // 11000 = duplicate key: the same request was sent twice at the same moment
@@ -149,6 +152,7 @@ const acceptRequest = async (req, res) => {
 
     request.status = "accepted";
     await request.save();
+    await notify(request.requester, "friend_accepted", req.user.id, "/users/" + req.user.id);
     res.status(200).json({ message: "Friend request accepted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
