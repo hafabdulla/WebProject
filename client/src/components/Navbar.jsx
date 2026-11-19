@@ -19,7 +19,10 @@ function Navbar() {
       <Link to="/" className="logo">
         MovieHive
       </Link>
-      <Link to="/recommendations">Moods</Link>
+      <div className="nav-links">
+        <Link to="/recommendations">Moods</Link>
+        <Link to="/forum">Forum</Link>
+      </div>
 
       {user ? (
         <div className="nav-links">

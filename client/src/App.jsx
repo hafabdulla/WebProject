@@ -12,6 +12,9 @@ import Profile from "./pages/Profile";
 import Recommendations from "./pages/Recommendations";
 import Friends from "./pages/Friends";
 import UserPage from "./pages/UserPage";
+import Forum from "./pages/Forum";
+import ForumBoard from "./pages/ForumBoard";
+import ForumThread from "./pages/ForumThread";
 import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   const token = useSelector((state) => state.auth.token);
@@ -74,6 +77,9 @@ function App() {
           }
         />
         <Route path="/users/:id" element={<UserPage />} />
+        <Route path="/forum" element={<Forum />} />
+        <Route path="/forum/thread/:id" element={<ForumThread />} />
+        <Route path="/forum/:board" element={<ForumBoard />} />
       </Routes>
     </div>
   );
