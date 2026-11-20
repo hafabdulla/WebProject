@@ -66,30 +66,30 @@ function Navbar() {
       <div className="nav-links">
         <Link to="/recommendations">Moods</Link>
         <Link to="/forum">Forum</Link>
-      </div>
 
-      {user ? (
-        <div className="nav-links">
-          <Link to="/watchlist">Watchlist</Link>
-          <Link to="/friends">Friends</Link>
-          <Link to="/chat">
-            Chat
-            {unreadMessages > 0 && <span className="badge">{unreadMessages}</span>}
-          </Link>
-          <Link to="/notifications" aria-label="Notifications">
-            Alerts
-            {unreadNotifications > 0 && <span className="badge">{unreadNotifications}</span>}
-          </Link>
-          <Link to="/profile">Profile</Link>
-          <span>Hello, {user.name}</span>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      ) : (
-        <div className="nav-links">
-          <Link to="/login">Login</Link>
-          <Link to="/register">Sign up</Link>
-        </div>
-      )}
+        {user ? (
+          <>
+            <Link to="/watchlist">Watchlist</Link>
+            <Link to="/friends">Friends</Link>
+            <Link to="/chat">
+              Chat
+              {unreadMessages > 0 && <span className="badge">{unreadMessages}</span>}
+            </Link>
+            <Link to="/notifications" aria-label="Notifications">
+              Alerts
+              {unreadNotifications > 0 && <span className="badge">{unreadNotifications}</span>}
+            </Link>
+            <Link to="/profile">Profile</Link>
+            <span>Hello, {user.name}</span>
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Sign up</Link>
+          </>
+        )}
+      </div>
     </nav>
   );
 }
