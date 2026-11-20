@@ -34,6 +34,9 @@ const register = async(req, res) => {
         if(!user || !(await bcrypt.compare(password, user.password))){
             return res.status(400).json({message: "Invalid Email or password"});
         }
+        if(user.isBlocked){
+            return res.status(403).json({message: "This account has been blocked"})
+        }
         res.status(200).json({
             token: makeToken(user),
             user: {id: user._id, name: user.name, email: user.email, role: user.role},
