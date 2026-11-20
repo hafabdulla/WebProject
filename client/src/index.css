@@ -19,6 +19,8 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
   padding: 14px 24px;
   background: #1e2028;
 }
@@ -31,9 +33,12 @@ a {
 .nav-links {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 16px;
 }
-
+.nav-links > span {
+  white-space: nowrap;
+}
 /* page content */
 .page {
   max-width: 420px;
