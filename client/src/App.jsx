@@ -34,7 +34,7 @@ function App() {
         const res = await fetch("/api/auth/me", {
           headers: { Authorization: "Bearer " + token },
         });
-        if (res.status === 401) {
+        if (res.status === 401 || res.status === 403) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           dispatch(logout());
