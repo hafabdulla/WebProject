@@ -80,7 +80,6 @@ function Navbar() {
               {unreadNotifications > 0 && <span className="badge">{unreadNotifications}</span>}
             </Link>
             <Link to="/profile">Profile</Link>
-            <Link to="/profile">Profile</Link>
             {user.role === "admin" && <Link to = "/admin">Admin</Link>}
             <span>Hello, {user.name}</span>
             <button onClick={handleLogout}>Logout</button>
