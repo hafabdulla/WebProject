@@ -143,6 +143,30 @@ button {
 .bar-label {
   font-size: 12px;
 }
+
+/*admin users*/
+.table-scroll {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid #2c2f3a;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 /* Movie Pages */
 
 .page-wide {
