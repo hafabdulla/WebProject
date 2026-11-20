@@ -18,6 +18,7 @@ import ForumThread from "./pages/ForumThread";
 import Chat from "./pages/Chat";
 import Notifications from "./pages/Notifications";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDashboard from "./pages/AdminDashboard"
 function App() {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
@@ -106,6 +107,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/admin" element={<ProtectedRoute adminOnly> <AdminDashboard/>
+        </ProtectedRoute>
+        }/>
       </Routes>
     </div>
   );

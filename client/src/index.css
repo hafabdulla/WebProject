@@ -79,7 +79,13 @@ button {
   color: #a0a3b1;
   font-size: 14px;
 }
-
+/* admin dashboard */
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 24px;
+}
 
 /* Movie Pages */
 
