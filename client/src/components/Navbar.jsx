@@ -71,6 +71,7 @@ function Navbar() {
       {user ? (
         <div className="nav-links">
           <Link to="/watchlist">Watchlist</Link>
+          <Link to="/lists">Lists</Link>
           <Link to="/friends">Friends</Link>
           <Link to="/chat">
             Chat

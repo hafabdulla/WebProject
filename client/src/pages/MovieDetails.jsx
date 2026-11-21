@@ -2,6 +2,7 @@ import {useState, useEffect} from "react"
 import {useParams} from "react-router-dom";
 import Reviews from "../components/Reviews";
 import WatchlistButtons from "../components/WatchlistButtons";
+import AddToList from "../components/AddToList";
 
 const IMAGE_BASE = "https://image.tmdb.org/t/p/w342"
 
@@ -118,6 +119,7 @@ return (
             </div>
         </div>
         <WatchlistButtons movieId={movie.id} />
+        <AddToList movieId={movie.id} />
         {trailerKey && (
             <div className="trailer-section">
                 <h3>Trailer</h3>

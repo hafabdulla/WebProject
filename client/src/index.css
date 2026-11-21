@@ -544,6 +544,94 @@ a.forum-row:hover {
   min-width: 0;
 }
 
+/* Custom lists */
+.list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.list-card {
+  display: block;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #1e2028;
+  color: #f1f1f1;
+  transition: transform 0.15s;
+}
+
+.list-card:hover {
+  transform: translateY(-4px);
+}
+
+/* 4 posters side by side as the list's preview */
+.list-posters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  aspect-ratio: 2 / 0.75;
+  background: #2a2d38;
+}
+
+.list-posters img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.list-posters.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a8d9a;
+  font-size: 14px;
+}
+
+.list-card-info {
+  padding: 10px 12px;
+}
+
+.list-card-info h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.list-card-info p {
+  margin: 0;
+}
+
+.list-item .small {
+  margin: 6px 0;
+}
+
+.list-search {
+  margin-top: 20px;
+}
+
+.list-members {
+  margin-top: 32px;
+}
+
+.add-to-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.invite-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  background: #2f3240;
+  border-left: 4px solid #f5c518;
+}
+
 /* Trailer on the movie page */
 .trailer-section {
   max-width: 800px;

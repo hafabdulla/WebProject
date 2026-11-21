@@ -6,7 +6,7 @@ const notificationSchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // who gets it
     type: {
       type: String,
-      enum: ["friend_request", "friend_accepted", "message"],
+      enum: ["friend_request", "friend_accepted", "message", "list_invite", "list_joined"],
       required: true,
     },
     actor: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // who caused it

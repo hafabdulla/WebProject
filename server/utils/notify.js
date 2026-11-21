@@ -6,6 +6,8 @@ const TEXTS = {
   friend_request: " sent you a friend request",
   friend_accepted: " accepted your friend request",
   message: " sent you a message",
+  list_invite: " invited you to a movie list",
+  list_joined: " joined your movie list",
 };
 
 // Saves a notification for userId and pushes it to their open tabs right away.

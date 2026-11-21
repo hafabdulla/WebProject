@@ -10,17 +10,8 @@ const PAGE_SIZE = 50;
 
 const isValidId = (id) => mongoose.isObjectIdOrHexString(id);
 
-// true if the two users are friends (only friends can chat)
-const areFriends = async (userA, userB) => {
-  const friendship = await Friendship.findOne({
-    status: "accepted",
-    $or: [
-      { requester: userA, recipient: userB },
-      { requester: userB, recipient: userA },
-    ],
-  });
-  return friendship !== null;
-};
+// only friends can chat; areFriends checks that
+const { areFriends } = require("../utils/friends");
 
 // GET /api/chat/conversations  - every friend, with the last message and unread count
 const getConversations = async (req, res) => {

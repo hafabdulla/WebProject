@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoutes");
 const forumRoutes = require("./routes/forumRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const listRoutes = require("./routes/listRoutes");
 const http = require("http");
 const { initSocket } = require("./socket");
 const express = require("express");
@@ -31,6 +32,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/forum", forumRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/lists", listRoutes);
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
