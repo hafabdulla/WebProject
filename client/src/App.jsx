@@ -20,6 +20,7 @@ import Notifications from "./pages/Notifications";
 import Lists from "./pages/Lists";
 import ListPage from "./pages/ListPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDashboard from "./pages/AdminDashboard"
 function App() {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
@@ -35,7 +36,7 @@ function App() {
         const res = await fetch("/api/auth/me", {
           headers: { Authorization: "Bearer " + token },
         });
-        if (res.status === 401) {
+        if (res.status === 401 || res.status === 403) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           dispatch(logout());
@@ -124,6 +125,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/admin" element={<ProtectedRoute adminOnly> <AdminDashboard/>
+        </ProtectedRoute>
+        }/>
       </Routes>
     </div>
   );
