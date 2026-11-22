@@ -1,5 +1,6 @@
 const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
+const allowedOrigins = require("./config/origins");
 
 // Socket.IO keeps an open connection between the server and each logged in browser,
 // so the server can push new messages and notifications without the page asking.
@@ -8,7 +9,7 @@ let io = null;
 // called once from index.js with the http server
 const initSocket = (httpServer) => {
   io = new Server(httpServer, {
-    cors: { origin: process.env.CLIENT_URL },
+    cors: { origin: allowedOrigins },
   });
 
   // only logged in users can connect: the browser sends its JWT when connecting

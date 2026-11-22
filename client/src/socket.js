@@ -5,6 +5,11 @@ import { io } from "socket.io-client";
 let socket = null;
 let socketToken = null;
 
+// The server's address, e.g. https://moviehive-api.onrender.com
+// It comes from client/.env (VITE_SERVER_URL) or from Vercel's settings.
+// Empty on your PC, where Vite's proxy is used instead.
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || "";
+
 // returns the connection for this token, making it if needed.
 // With no token (logged out) it closes the connection and returns null.
 export function getSocket(token) {
@@ -16,8 +21,14 @@ export function getSocket(token) {
     return socket;
   }
   disconnectSocket();
-  // no address given: it connects to the same site, and Vite forwards /socket.io to the server
-  socket = io({ auth: { token: token } });
+  const options = { auth: { token: token } };
+  if (SERVER_URL) {
+    // online: connect straight to the server (Vercel can't forward live connections)
+    socket = io(SERVER_URL, options);
+  } else {
+    // on your PC: connect to the same site, and Vite forwards /socket.io to the server
+    socket = io(options);
+  }
   socketToken = token;
   return socket;
 }
