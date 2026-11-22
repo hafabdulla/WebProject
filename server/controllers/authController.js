@@ -60,4 +60,37 @@ const register = async(req, res) => {
             }
     }
 
-module.exports = {register, login, getMe};
+    const updateMe = async (req, res) =>{
+        try{
+            const {name, currentPassword, newPassword} = req.body;
+            if(name === undefined && !newPassword){
+                return res.status(400).json({message:"nothing to update"})
+            }
+            const user = await User.findById(req.user.id)
+            if(!user) return res.status(404).json({message: "User not found"}) 
+
+                if(name !== undefined){
+                    if(name.trim()===""){
+                        return res.status(400).json({message: "Name cannot be empty"});
+                    }user.name = name.trim();
+                }
+                if(newPassword){
+                    if(!currentPassword){
+                        return res.status(400).json({message:"enter your current password"});
+                    }
+                    if(newPassword.length<6){
+                        return res.status(400).json({message: "New password must be at least 6 characters"});
+                    }
+                    const matches = await bcrypt.compare(currentPassword, user.password);
+                    if(!matches) return res.status(401).json({message: "Current password is incorrect"})
+                    user.password = await bcrypt.hash(newPassword, 10);
+                }
+                await user.save();
+                res.status(200).json({ id: user._id, name: user.name, email: user.email, role: user.role});
+        }
+        catch(err){
+            res.status(500).json({message: err.message});
+        }
+    }
+
+module.exports = {register, login, getMe, updateMe};
