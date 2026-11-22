@@ -17,12 +17,13 @@ const { initSocket } = require("./socket");
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const allowedOrigins = require("./config/origins");
 
 const app = express();
 
 connectDB();
 
-app.use(cors({ origin: process.env.CLIENT_URL }));
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);

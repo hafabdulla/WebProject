@@ -3,7 +3,10 @@ const dns = require("dns");
 
 // On some Windows PCs Node uses a local DNS server (127.0.0.1) that refuses the
 // SRV lookup that "mongodb+srv://" links need. Using public DNS fixes that.
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
+// Only on Windows: online hosts (Render) have DNS that already works.
+if (process.platform === "win32") {
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+}
 
 const connectDB = async() => {
     try{
