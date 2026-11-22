@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
+import {updateUser} from "../store/authSlice"
 function Profile() {
   const user = useSelector((state) => state.auth.user);
   const token = useSelector((state) => state.auth.token);
@@ -10,6 +10,59 @@ function Profile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const dispatch = useDispatch();
+  const [name, setName] = useState(user.name);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [formMessage, setFormMessage] = useState("");
+  async function handleSave(e){
+    e.preventDefault();
+    setFormError("");
+    setFormMessage("");
+    const body = {};
+    let changed = false;
+    if(name.trim()!== user.name){
+      body.name = name;
+      changed = true;
+    }
+    if (newPassword) {
+      body.currentPassword = currentPassword;
+      body.newPassword = newPassword;
+      changed = true;
+    }
+    if (!changed) {
+      setFormError("Nothing to change");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/auth/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFormError(data.message);
+        setSaving(false);
+        return;
+      }
+      dispatch(updateUser(data));
+      localStorage.setItem("user", JSON.stringify(data));
+      setCurrentPassword("");
+      setNewPassword("");
+      setFormMessage("Saved");
+    } catch (err) {
+      setFormError("Could not reach the server");
+    }
+    setSaving(false);
+  }
   useEffect(() => {
     async function loadReviews() {
       setLoading(true);
@@ -78,7 +131,35 @@ function Profile() {
           <Link to="/watchlist">Go to my watchlist</Link>
         </p>
       </div>
-
+      <h3>Account settings</h3>
+      <form onSubmit={handleSave}>
+        <label>
+          Name
+          <input value={name} onChange={(e) => setName(e.target.value)} />
+        </label>
+        <label>
+          Current password
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
+        </label>
+        <label>
+          New password
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </label>
+        <p className="small">Leave the password fields empty to only change your name.</p>
+        <button type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Save changes"}
+        </button>
+        {formError && <p className="error">{formError}</p>}
+        {formMessage && <p className="small">{formMessage}</p>}
+      </form>
       <h3>My reviews ({reviews.length})</h3>
       {error && <p className="error">{error}</p>}
       {loading && <p>Loading...</p>}

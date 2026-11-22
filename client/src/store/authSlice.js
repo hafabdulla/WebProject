@@ -19,8 +19,12 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
     },
+    // action.payload is the updated user that the server sends back after an edit
+    updateUser: (state, action)=>{
+      state.user = action.payload;
+    }
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, updateUser } = authSlice.actions;
 export default authSlice.reducer;
