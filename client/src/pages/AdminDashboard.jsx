@@ -1,6 +1,7 @@
 import AdminOverview from "../components/AdminOverview";
 import AdminUsers from "../components/AdminUsers"
 import AdminReports from "../components/AdminReports";
+import AdminReviews from "../components/AdminReviews";
 import {useState} from "react"
 function AdminDashboard(){
     const [tab, setTab] = useState("overview");
@@ -37,7 +38,7 @@ function AdminDashboard(){
       </div>
     {tab === "overview" && <AdminOverview />}
     {tab === "users" && <AdminUsers />}
-    {tab === "reviews" && <p>Reviews coming soon.</p>}
+    {tab === "reviews" && <AdminReviews />}
     {tab === "reports" && <AdminReports />}
         </div>
     )
