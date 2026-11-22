@@ -9,6 +9,10 @@ const reviewSchema = new mongoose.Schema(
     rating: { type: Number, required: true, min: 1, max: 5 },
     text: { type: String, trim: true, default: "" },
     likes: { type: [String], default: [] },      // ids (as text) of the users who liked this review
+    // how positive the text sounds, from -1 to 1 (worked out by utils/sentiment.js).
+    // null = not worked out yet (reviews written before this was added)
+    sentiment: { type: Number, default: null },
+    genreIds: { type: [Number], default: [] },    // the movie's TMDB genres, to learn what the user likes
   },
   { timestamps: true }
 );

@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Review = require("../models/Review");
 const User = require("../models/User");
+const { analyse } = require("../utils/sentiment");
+const { getMovieBasics } = require("../utils/tmdb");
 
 const MAX_TEXT_LENGTH = 2000;
 
@@ -39,6 +41,18 @@ const getMovieReviews = async (req, res) => {
     const reviews = await Review.find({ movieId: movieId })
       .populate("user", "name")
       .sort({ createdAt: -1 });
+
+    // reviews written before sentiment was added get their score now (and keep it)
+    for (let i = 0; i < reviews.length; i++) {
+      if (reviews[i].sentiment === null) {
+        reviews[i].sentiment = analyse(reviews[i].text).score;
+        await Review.updateOne(
+          { _id: reviews[i]._id },
+          { sentiment: reviews[i].sentiment },
+          { timestamps: false }
+        );
+      }
+    }
 
     res.status(200).json({ average: averageOf(reviews), count: reviews.length, reviews });
   } catch (err) {
@@ -164,11 +178,25 @@ const createReview = async (req, res) => {
       return res.status(400).json({ message: "You already reviewed this movie" });
     }
 
+    // the movie's genres, so we can learn which genres this user likes.
+    // If TMDB is down the review is still saved; the genres are filled in later.
+    let genreIds = [];
+    try {
+      const movie = await getMovieBasics(movieId);
+      if (movie) {
+        genreIds = movie.genreIds;
+      }
+    } catch (err) {
+      genreIds = [];
+    }
+
     const review = await Review.create({
       movieId,
       rating: Number(rating),
       text,
       user: req.user.id,
+      sentiment: analyse(text).score,
+      genreIds: genreIds,
     });
     res.status(201).json(review);
   } catch (err) {
@@ -214,6 +242,7 @@ const updateReview = async (req, res) => {
           .json({ message: "Review text can be at most " + MAX_TEXT_LENGTH + " characters" });
       }
       review.text = text;
+      review.sentiment = analyse(text).score;
     }
 
     await review.save();

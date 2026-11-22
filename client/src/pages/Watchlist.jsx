@@ -11,6 +11,49 @@ function Watchlist(){
     const [filter, setFilter] = useState("");
     const [loading, setLoading]= useState(false);
     const [error, setError] = useState("");
+    // genres the user kept disliking lately (from /api/taste)
+    const [pausedGenres, setPausedGenres] = useState([]);
+
+    async function loadPaused(){
+        try{
+            const res = await fetch("/api/taste", {
+                headers:{ Authorization:"Bearer " + token},
+            });
+            if(!res.ok){
+                return;
+            }
+            const data = await res.json();
+            const paused = [];
+            for(let i = 0; i < data.genres.length; i++){
+                if(data.genres[i].status === "paused"){
+                    paused.push(data.genres[i]);
+                }
+            }
+            setPausedGenres(paused);
+        }catch(err){
+            // nothing is paused then, the watchlist still works
+        }
+    }
+
+    useEffect(() => {
+        if(token){
+            loadPaused();
+        }
+    }, [token]);
+
+    async function resume(genreId){
+        try{
+            const res = await fetch("/api/taste/resume/" + genreId, {
+                method: "POST",
+                headers:{ Authorization:"Bearer " + token},
+            });
+            if(res.ok){
+                loadPaused();
+            }
+        }catch(err){
+            setError("could not reach the server");
+        }
+    }
 
     useEffect(() =>{
         if(!token){
@@ -58,14 +101,66 @@ function Watchlist(){
             </p>
         )
     }
-      const cards = [];
+  // the paused genre a movie belongs to, or null
+  function pausedGenreOf(movie) {
+    if (!movie.genres) {
+      return null;
+    }
+    for (let i = 0; i < pausedGenres.length; i++) {
+      for (let k = 0; k < movie.genres.length; k++) {
+        if (movie.genres[k].id === pausedGenres[i].id) {
+          return pausedGenres[i];
+        }
+      }
+    }
+    return null;
+  }
+
+  const cards = [];
+  const pausedCards = [];
 
   for (let i = 0; i < movies.length; i++) {
-    cards.push(
-      <div key={movies[i].id}>
-        <MovieCard movie={movies[i]} />
-        <p className="small">{movies[i].watchStatus}</p>
-      </div>
+    const pausedGenre = pausedGenreOf(movies[i]);
+    if (pausedGenre) {
+      pausedCards.push(
+        <div key={movies[i].id} className="paused-card">
+          <MovieCard movie={movies[i]} />
+          <p className="small">{pausedGenre.name} is paused</p>
+        </div>
+      );
+    } else {
+      cards.push(
+        <div key={movies[i].id}>
+          <MovieCard movie={movies[i]} />
+          <p className="small">{movies[i].watchStatus}</p>
+        </div>
+      );
+    }
+  }
+
+  // which paused genres actually have movies here
+  const pausedHere = [];
+  for (let i = 0; i < pausedGenres.length; i++) {
+    for (let k = 0; k < movies.length; k++) {
+      if (pausedGenreOf(movies[k]) === pausedGenres[i]) {
+        pausedHere.push(pausedGenres[i]);
+        break;
+      }
+    }
+  }
+  const resumeButtons = [];
+  for (let i = 0; i < pausedHere.length; i++) {
+    const until = new Date(pausedHere[i].pausedUntil).toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "short",
+    });
+    resumeButtons.push(
+      <span key={pausedHere[i].id} className="paused-genre">
+        {pausedHere[i].name} until {until}
+        <button className="small-button secondary-button" onClick={() => resume(pausedHere[i].id)}>
+          Resume now
+        </button>
+      </span>
     );
   }
 
@@ -103,6 +198,18 @@ function Watchlist(){
       )}
 
       <div className="movie-grid">{cards}</div>
+
+      {pausedCards.length > 0 && (
+        <div className="paused-section">
+          <h3>Paused for now</h3>
+          <p className="small">
+            Your recent reviews of these genres were negative, so we moved their movies here
+            for a while. See what we <Link to="/recommendations">picked for you</Link> instead.
+          </p>
+          <div className="paused-genres">{resumeButtons}</div>
+          <div className="movie-grid">{pausedCards}</div>
+        </div>
+      )}
     </div>
   );
 }

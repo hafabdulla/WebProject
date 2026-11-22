@@ -828,3 +828,144 @@ img {
     display: inline;
   }
 }
+/* Review tone (sentiment) */
+.tone {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  background: #2a2d38;
+  color: #a0a3b1;
+}
+
+/* "positive tone" shows as "Positive tone" */
+.tone::first-letter {
+  text-transform: uppercase;
+}
+
+.tone-positive {
+  background: #1f3a2b;
+  color: #6fdc9a;
+}
+
+.tone-negative {
+  background: #3d2224;
+  color: #ff8a8a;
+}
+
+.review .tone {
+  margin-bottom: 8px;
+}
+
+.tone-preview {
+  margin: 0;
+}
+
+/* Picked for you + Your taste */
+.for-you {
+  margin-bottom: 36px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #2a2d38;
+}
+
+.taste {
+  margin-top: 28px;
+}
+
+.taste-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 300px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.taste-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  background: #2a2d38;
+}
+
+/* the line in the middle = neutral */
+.taste-bar::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: #4a4e5e;
+}
+
+.taste-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 5px;
+  background: #f5c518;
+}
+
+.taste-fill.negative {
+  background: #ff6b6b;
+}
+
+.taste-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.taste-status {
+  font-size: 14px;
+}
+
+.status-liked {
+  color: #6fdc9a;
+}
+
+.status-disliked,
+.status-paused {
+  color: #ff8a8a;
+}
+
+/* Watchlist: movies from paused genres */
+.paused-section {
+  margin-top: 36px;
+}
+
+.paused-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.paused-genre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #1e2028;
+  font-size: 14px;
+}
+
+.paused-card {
+  opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+  .taste-row {
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #2a2d38;
+  }
+
+  .taste-bar {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+}

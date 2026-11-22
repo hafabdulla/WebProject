@@ -2,6 +2,17 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+// the same limits the server uses (server/utils/sentiment.js)
+function toneOf(score) {
+  if (score >= 0.25) {
+    return "positive";
+  }
+  if (score <= -0.25) {
+    return "negative";
+  }
+  return "neutral";
+}
+
 function Reviews({ movieId }) {
   const user = useSelector((state) => state.auth.user);
   const token = useSelector((state) => state.auth.token);
@@ -12,6 +23,8 @@ function Reviews({ movieId }) {
   const [text, setText] = useState("");
   const [editingId, setEditingId] = useState("");
   const [error, setError] = useState("");
+  // how the text being typed sounds: { label, words }, or null
+  const [tone, setTone] = useState(null);
 
   // the header that proves who we are (the server's protect middleware reads it)
   const headers = {
@@ -41,6 +54,31 @@ function Reviews({ movieId }) {
   useEffect(() => {
     loadReviews();
   }, [movieId]);
+
+  // while the user types, ask the server how the text sounds.
+  // We wait until they stop typing for a moment, so we don't ask on every key.
+  useEffect(() => {
+    if (!token || !text.trim()) {
+      setTone(null);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/taste/analyse", {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({ text: text }),
+        });
+        if (res.ok) {
+          setTone(await res.json());
+        }
+      } catch (err) {
+        // no preview, the review still works
+      }
+    }, 400);
+    // if they type again before 400ms, cancel the old question
+    return () => clearTimeout(timer);
+  }, [text, token]);
 
   // one form is used for both writing a new review and editing your own
   async function handleSubmit(event) {
@@ -181,6 +219,11 @@ function Reviews({ movieId }) {
           <strong>{author}</strong> rated it {review.rating}/5
         </p>
         {review.text && <p>{review.text}</p>}
+        {review.text && review.sentiment !== null && review.sentiment !== undefined && (
+          <span className={"tone tone-" + toneOf(review.sentiment)}>
+            {toneOf(review.sentiment)} tone
+          </span>
+        )}
         <div className="review-actions">
           {user && (
             <button className="small-button" onClick={() => handleLike(review._id)}>
@@ -234,6 +277,12 @@ function Reviews({ movieId }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
+        {tone && (
+          <p className="small tone-preview">
+            Sounds <span className={"tone tone-" + tone.label}>{tone.label}</span>
+            {tone.words.length > 0 && " because of: " + tone.words.join(", ")}
+          </p>
+        )}
         <button type="submit">{buttonText}</button>
         {editingId && (
           <button type="button" onClick={cancelEdit}>
