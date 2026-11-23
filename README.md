@@ -133,8 +133,8 @@ Render's servers don't have a fixed address, so Atlas has to accept all of them.
 
 ### 3. Frontend on Vercel
 
-1. If the Render address is not exactly `https://moviehive-api.onrender.com`, change it in
-   `client/vercel.json` and push.
+1. `client/vercel.json` forwards `/api` to our Render address, `https://moviehive-api-p8nc.onrender.com`.
+   If you deploy your own copy, put your Render address there instead and push.
 2. On [vercel.com](https://vercel.com), click **Add New > Project** and import this repo.
 3. Fill in:
    - **Root Directory**: `client` (Vercel then detects Vite by itself)
