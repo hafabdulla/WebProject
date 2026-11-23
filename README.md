@@ -6,7 +6,9 @@ chat, talk on the forum, and get recommendations that learn from how your review
 
 Movie data (titles, posters, trailers, cast) comes from [TMDB](https://www.themoviedb.org/).
 
-**Live site:** _add the Vercel link here after deploying_
+**Live site:** https://moviehive-eight.vercel.app
+
+The server sleeps when nobody uses it, so the first page can take about a minute to load.
 
 ## Features
 
@@ -150,6 +152,17 @@ CLIENT_URL=http://localhost:5173,https://moviehive.vercel.app
 ```
 
 Render restarts by itself. The site is now live.
+
+### Updating the live site
+
+- **Backend**: on Render, open the service and click **Manual Deploy > Deploy latest commit**.
+  (If Render's Auto-Deploy is on, it already does this after every push to `main`.)
+- **Frontend**: our Vercel project was deployed from a PC with the Vercel CLI, so it does not
+  update on push. After pulling the latest `main`, run this in the `client` folder:
+
+  ```
+  npx vercel --prod
+  ```
 
 ### How the deployed parts talk to each other
 
